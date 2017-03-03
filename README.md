@@ -7,7 +7,7 @@ Different implementations of provisions may be available with more recent standa
 In addition, some features may require the C++14 or C++17 standards to be available.
 
 # Changes
-*yymp* has undergone some changes recently! Quite a number actually.
+*yymp* has undergone some changes recently!
   * Alias templates are far less prevalent
   * Removal of integer sequence manipulation (to better direct the focus of the library)
   * Removal of a number of some superfluous features, such as accessors, conversions, and reversal
