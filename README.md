@@ -6,9 +6,6 @@ A C++ compiler supporting at least the C++11 standard.
 Different implementations of provisions may be available with more recent standards.
 In addition, some features may require the C++14 or C++17 standards to be available.
 
-# Usage
-As *yymp* is a header-only library, simply include this library in the include path.
-
 # Changes
 *yymp* has undergone some changes recently! Quite a number actually.
   * Alias templates are far less prevalent
