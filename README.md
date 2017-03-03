@@ -27,12 +27,12 @@ The examples that follow assume that this header is included.
 
 Type lists are types themselves. To create one, use the `yymp::typelist` class template.
 ``` c++
-using my_types = yymp::typelist< int, char*, int, void* >;
+using my_types = yymp::typelist<int, char*, int, void*>;
 ```
 
 We sometime need to join two or more type lists.
 ``` c++
-using foo_types = yymp::typelist< void, void, short >;
+using foo_types = yymp::typelist<void, void, short>;
 using my_joined_types = typename yymp::join<foo_types, my_types, foo_types>::type; 
 // -> void, void, short, int, char*, int, void*, void, void, short
 ```
@@ -40,13 +40,13 @@ This is the style chosen for this library when typelists are manipulated; the re
 
 We can also group types in a type list by a selector, the result of which is a type list of `group` types.
 ``` c++
-template< class T >
+template<class T>
 struct identity_selector {
     using type = T;
 };
 
 using my_groups = typename yymp::group_by<identity_selector, my_types>::type; 
-// -> yymp::group<int, yymp::typelist<int>>, yymp::group<char*, yymp::typelist<char*>>, yymp::group<void*, yymp::typelist<void*>>
+// -> yymp::group<int, yymp::typelist<int, int>>, yymp::group<char*, yymp::typelist<char*>>, yymp::group<void*, yymp::typelist<void*>>
 ```
 
 The result can be manipulated by other features such as `transform` and `expand` to create interesting functionality.
