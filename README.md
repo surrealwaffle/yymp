@@ -10,8 +10,8 @@ In addition, some features may require the C++14 or C++17 standards to be availa
 *yymp* has undergone some changes recently!
   * Alias templates are far less prevalent
   * Removal of integer sequence manipulation (to better direct the focus of the library)
-  * Removal of a number of some superfluous features, such as accessors, conversions, and reversal
-  * Replaced complicated template rebinding with a much simpler implementation and limited usage
+  * Removal of some superfluous features, such as accessors, conversions, and reversal
+  * Replaced complicated template rebinding with a much simpler implementation and usage limited to the scope of this library
 
 # Example Usage
 There are two ways to include the headers for type lists.
@@ -54,7 +54,7 @@ The result can be manipulated by other features such as `transform` and `expand`
 using my_distinct_types = typename yymp::transform<yymp::get_group_key, my_groups>::type;
 // -> int, char*, void*
 
-using my_group_types = typename yymp::transform_into<yymp::get_group_types, my_groups>::type;
+using my_group_types = typename yymp::transform<yymp::get_group_types, my_groups>::type;
 // -> yymp::typelist<int, int>, yymp::typelist<char*>, yymp::typelist<void*>
 
 using my_sorted_types = typename yymp::expand<yymp::join, my_group_types>::type; // equivalent to typename yymp::join< T... >::type for T in my_group_types
