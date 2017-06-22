@@ -1,16 +1,16 @@
 # yymp
-*yymp* is a type list manipulation library for C++11, C++14, and C++17.
+*yymp* is a typelist manipulation library for C++11, C++14, and C++17.
 
 # Requirements
 A C++ compiler supporting at least the C++11 standard.
 Some features may require the C++14 or C++17 standards to be available.
 
 # Example Usage
-There are two ways to include the headers for type lists.
+There are two ways to include the headers for typelists.
 ``` c++
 #include <yymp/typelist_fwd.hpp>
 ```
-This will include just the type list definition, without any other functionality.
+This will include just the typelist definition, without any other functionality.
 ``` c++
 #include <yymp/typelist.hpp>
 ```
@@ -22,7 +22,7 @@ Type lists are types themselves. To create one, use the `yymp::typelist` class t
 using my_types = yymp::typelist<int, char*, int, void*>;
 ```
 
-We sometime need to join two or more type lists.
+We sometime need to join two or more typelists.
 ``` c++
 using foo_types = yymp::typelist<void, void, short>;
 using my_joined_types = typename yymp::join<foo_types, my_types, foo_types>::type; 
@@ -30,7 +30,7 @@ using my_joined_types = typename yymp::join<foo_types, my_types, foo_types>::typ
 ```
 The result is stored as the `type` nested typename. This is the usual way of retrieving results from the features of this library.
 
-We can also group types in a typelist by a selector, the result of which is a type list of `group` types.
+We can also group types in a typelist by a selector, the result of which is a typelist of `group` types.
 ``` c++
 template<class T>
 struct identity_selector {
