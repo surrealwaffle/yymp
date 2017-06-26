@@ -22,6 +22,7 @@ template< template<class...> class BinaryOp, class Init, class TypeList >
 struct accumulate;
 
 #if __cpp_fold_expressions >= 201411
+
 template< template<class...> class BinaryOp, class Init, class... Ts >
 struct accumulate<
 	BinaryOp,
@@ -33,7 +34,9 @@ struct accumulate<
 
 	using type = typename decltype((accumulator<Init>{} + ... + accumulator<Ts>{}))::type;
 };
-#elif __cpp_variadic_templates >= 200704
+
+#else
+
 template< template<class...> class BinaryOp, class Init >
 struct accumulate< BinaryOp, Init, typelist<> > {
     using type = Init;
@@ -43,6 +46,7 @@ template< template<class...> class BinaryOp, class Init, class T, class... Ts >
 struct accumulate< BinaryOp, Init, typelist< T, Ts... > > {
     using type = typename accumulate< BinaryOp, typename BinaryOp<Init, T>::type, typelist< Ts... > >::type;
 };
+
 #endif
 
 }

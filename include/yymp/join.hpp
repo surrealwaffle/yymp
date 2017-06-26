@@ -6,7 +6,7 @@
 #ifndef YYMP__JOIN_HPP
 #define YYMP__JOIN_HPP
 
-#include <yymp/typelist.hpp>
+#include <yymp/typelist_fwd.hpp>
 #include <yymp/accumulate.hpp>
 
 #include <yymp/detail/ops.hpp>

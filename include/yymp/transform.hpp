@@ -6,7 +6,7 @@
 #ifndef YYMP__TRANSFORM_HPP
 #define YYMP__TRANSFORM_HPP
 
-#include <yymp/typelist.hpp>
+#include <yymp/typelist_fwd.hpp>
 
 namespace yymp {
 

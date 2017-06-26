@@ -11,6 +11,8 @@
 #include <yymp/transform.hpp>
 #include <yymp/group.hpp>
 
+#include <type_traits> // std::conditional
+
 namespace yymp {
 
 template< template< class... > class Predicate, class TypeList >
