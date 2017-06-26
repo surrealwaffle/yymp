@@ -72,7 +72,15 @@ static_assert(is_same<tlist, typename filter<basic_predicate2, tlist>::type>(), 
 template< class... >
 struct true_variadic_predicate : std::true_type { };
 
+template< class... Ts >
+using true_variadic_template_alias_predicate = true_variadic_predicate< Ts... >;
+
+template< class >
+using true_variadic_template_alias_predicate2 = std::true_type;
+
 static_assert(is_same<tlist, typename filter<true_variadic_predicate, tlist>::type>(), "true variadic predicate must yield input");
+static_assert(is_same<tlist, typename filter<true_variadic_template_alias_predicate, tlist>::type>(), "true variadic template alias predicate must yield input");
+static_assert(is_same<tlist, typename filter<true_variadic_template_alias_predicate2, tlist>::type>(), "true variadic template alias predicate2 must yield input");
 
 //////////////////////
 // (6) use of std::* predicates
