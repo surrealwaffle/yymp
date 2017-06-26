@@ -83,6 +83,7 @@ using mylist = typelist<
     C*,
     int const*,
     bool,
+    void,
     float,
     A,
     void,
@@ -93,4 +94,4 @@ using mylist = typelist<
 static_assert(is_same<typelist<C*, int const*, void*, C*>, typename filter<std::is_pointer, mylist>::type>(), "");
 static_assert(is_same<typelist<int, char, bool>, typename filter<std::is_integral, mylist>::type>(), "");
 static_assert(is_same<typelist<int, char, bool, float>, typename filter<std::is_arithmetic, mylist>::type>(), "");
-static_assert(is_same<typelist<int, char, bool, float, void>, typename filter<std::is_fundamental, mylist>::type>(), "");
+static_assert(is_same<typelist<int, char, bool, void, float, void>, typename filter<std::is_fundamental, mylist>::type>(), "");
