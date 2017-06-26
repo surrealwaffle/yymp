@@ -6,6 +6,8 @@
 #ifndef YYMP__TYPELIST_FWD_HPP
 #define YYMP__TYPELIST_FWD_HPP
 
+#include <type_traits>
+
 namespace yymp {
 
 /**
