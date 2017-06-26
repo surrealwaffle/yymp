@@ -76,16 +76,10 @@ struct symmetric_difference< typelist<As...>, typelist<Bs...> > {
     using A = typelist<As...>;
     using B = typelist<Bs...>;
     
-    template< class T >
-    using not_in_A = none_of<T, A>;
-    
-    template< class T >
-    using not_in_B = none_of<T, B>;
-    
     using type = typename yymp::join<
-        typename filter<not_in_B, A>::type,
-        typename filter<not_in_A, B>::type
-    >;
+        typename difference<A, B>::type,
+        typename difference<B, A>::type
+    >::type;
 };
 
 }
