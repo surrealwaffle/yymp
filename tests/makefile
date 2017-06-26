@@ -1,7 +1,7 @@
 CXX=g++
 CXXFLAGS=-std=c++11 -I../include
 
-OBJ=basic_traits.o join.o filter.o
+OBJ=basic_traits.o join.o filter.o setops.o
 
 all: $(OBJ)
 
