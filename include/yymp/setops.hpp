@@ -21,6 +21,8 @@ namespace yymp {
 /** \brief Preserves the types that are in both \a A and \a B as \ref yymp::typelist "typelist" `type`.
  * 
  * The preserved types are in the order of \a A.
+ * The duplicates in \a A are preserved.
+ *
  * \tparam A A \ref yymp::typelist "typelist".
  * \tparam B A \ref yymp::typelist "typelist".
  */
@@ -30,6 +32,8 @@ struct intersection;
 /** \brief Preserves the types in \a A that are not in \a B as \ref yymp::typelist "typelist" `type`.
  *
  * The preserved types are in the order of \a A.
+ * The duplicates in \a A are preserved.
+ *
  * \tparam A A \ref yymp::typelist "typelist".
  * \tparam B A \ref yymp::typelist "typelist".
  */
@@ -39,6 +43,8 @@ struct difference;
 /** \brief Preserves the types of \a A and \a B that do not belong to both \a A and \a B.
  *
  * The preserved types are in the order of \a A first and then \a B.
+ * The duplicates in \a A and \a B are preserved.
+ *
  * \tparam A A \ref yymp::typelist "typelist".
  * \tparam B A \ref yymp::typelist "typelist".
  */
