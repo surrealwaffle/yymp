@@ -69,20 +69,17 @@ struct filter< Predicate, typelist< Ts... > > {
  * \tparam Ts The sequence of types to filter.
  */
 template< class T, class... Ts >
-struct filter_of< T, typelist< Ts... > > {
+struct filter_of< T, typelist< Ts... > > {    
     template< class U >
-    struct identity { using type = U; };
-
+    using is_T = std::is_same< T, U >;
+    
     /** \brief The \ref yymp::typelist "typelist" containing all occurrences of \a T in \a Ts.
      *
      * Duplicates are retained.
      */
-    using type = typename get_group<
-        T,
-        typename group_by<
-            identity,
-            typelist< Ts... >
-        >::type
+    using type = typename filter<
+        is_T,
+        typelist< Ts... >
     >::type;
 };
 
