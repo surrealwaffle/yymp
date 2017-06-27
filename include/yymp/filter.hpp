@@ -27,9 +27,19 @@ template< class TypeList >
 struct filter_duplicates;
 
 #if __cpp_lib_integer_sequence >= 201304
+
+/** \brief Retrieves the indices of types in \a TypeList that pass the \a Predicate, as the `std::index_sequence` type member `type`. 
+ *
+ * The order of and duplicates in \a TypeList are preserved.
+ * Requires C++14 or higher, or `std::integer_sequence`s to be available.
+ */
 template< template< class... > class Predicate, class TypeList >
 struct indices_where;
 
+/** \brief Retrieves the indices of \a T in \a TypeList , as the `std::index_sequence` type member `type`. 
+ *
+ * Requires C++14 or higher, or `std::integer_sequence`s to be available.
+ */
 template< class T, class TypeList >
 struct indices_of;
 #endif 
