@@ -40,7 +40,7 @@ struct intersection;
 template< class A, class B >
 struct difference;
 
-/** \brief Preserves the types of \a A and \a B that do not belong to both \a A and \a B.
+/** \brief Preserves the types of \a A and \a B that do not belong to both \a A and \a B as \ref yymp::typelist "typelist" `type`.
  *
  * The preserved types are in the order of \a A first and then \a B.
  * The duplicates in \a A and \a B are preserved.
