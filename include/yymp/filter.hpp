@@ -11,7 +11,11 @@
 #include <yymp/transform.hpp>
 #include <yymp/group.hpp>
 
-#include <type_traits> // std::conditional
+#if __cpp_lib_integer_sequence >= 201304
+#include <yymp/detail/indexed_typelist.hpp>
+#endif
+
+#include <type_traits>  // std::conditional, std::is_same
 
 namespace yymp {
 
@@ -23,6 +27,17 @@ struct filter_of;
 
 template< class TypeList >
 struct filter_duplicates;
+
+#if __cpp_lib_integer_sequence >= 201304
+// requires std::integer_sequence
+
+template< template< class... > class Predicate, class TypeList >
+struct indices_where;
+
+template< class T, class TypeList >
+struct indices_of;
+
+#endif 
 
 /** \brief Retains all types `T` in \a Ts for which <code>Predicate<T>::value</code> evaluates to \c true in-order as \ref yymp::typelist "typelist" `type`.
  *
@@ -91,6 +106,38 @@ struct filter_duplicates< typelist< Ts... > > {
         typename group_by< identity, typelist< Ts... > >::type
     >::type;
 };
+
+#if __cpp_lib_integer_sequence >= 201304
+
+template< template< class... > class Predicate, class... Ts >
+struct indices_where< Predicate, typelist<Ts...> > {
+    using TypeList = typelist<Ts...>;
+    using ZippedTypeList = detail::make_zipped< TypeList >;
+    
+    template< class ZippedType >
+    struct zipped_predicate {
+        static constexpr bool value = Predicate< typename ZippedType::type >::value;
+    };
+    
+    using type = detail::make_unzipped<
+        typename filter<
+            zipped_predicate,
+            ZippedTypeList
+        >::type;
+    >::type;
+};
+
+template< class T, class... Ts >
+struct indices_of< T, typelist<Ts...> > {
+    using TypeList = typelist<Ts...>;
+    
+    template< class U >
+    using is_T = std::is_same< T, U >;
+    
+    using type = typename indices_where< is_T, TypeList >::type;
+}
+
+#endif 
 
 }
 

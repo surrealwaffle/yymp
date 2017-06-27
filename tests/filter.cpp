@@ -17,6 +17,7 @@
 #include <yymp/filter.hpp>
 
 #include <type_traits>
+#include <utility>
 
 using ::yymp::typelist;
 using ::yymp::filter;
@@ -103,3 +104,7 @@ static_assert(is_same<typelist<C*, int const*, void*, C*>, typename filter<std::
 static_assert(is_same<typelist<int, char, bool>, typename filter<std::is_integral, mylist>::type>(), "");
 static_assert(is_same<typelist<int, char, bool, float>, typename filter<std::is_arithmetic, mylist>::type>(), "");
 static_assert(is_same<typelist<int, char, bool, void, float, void>, typename filter<std::is_fundamental, mylist>::type>(), "");
+
+#if __cpp_lib_integer_sequence >= 201304
+static_assert(is_same<std::index_sequence<2,3,9,10>, typename ::yymp::indices_where<std::is_pointer, mylist>::type>(), "");
+#endif
