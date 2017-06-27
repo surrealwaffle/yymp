@@ -42,6 +42,7 @@ struct indices_where;
  */
 template< class T, class TypeList >
 struct indices_of;
+
 #endif 
 
 /** \brief Retains all types `T` in \a Ts for which <code>Predicate<T>::value</code> evaluates to \c true in-order as \ref yymp::typelist "typelist" `type`.
@@ -109,7 +110,10 @@ struct filter_duplicates< typelist< Ts... > > {
     >::type;
 };
 
+/////////////////////////
+// C++14+ REQUIRED
 #if __cpp_lib_integer_sequence >= 201304
+
 template< template< class... > class Predicate, class... Ts >
 struct indices_where< Predicate, typelist<Ts...> > {
     using TypeList = typelist<Ts...>;
@@ -137,7 +141,10 @@ struct indices_of< T, typelist<Ts...> > {
     
     using type = typename indices_where< is_T, TypeList >::type;
 };
+
 #endif 
+//
+/////////////////////////
 
 }
 
