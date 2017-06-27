@@ -23,6 +23,7 @@ struct zip {
     using type = T;
 };
 
+#if __cpp_lib_integer_sequence >= 201304
 template< class TypeList >
 struct make_zipped;
 
@@ -52,6 +53,7 @@ template< std::size_t... Is, class... Ts >
 struct make_unzipped< ::yymp::typelist<zip<Is, Ts>...> > {
     using type = std::integer_sequence<std::size_t, Is...>;
 };
+#endif
 
 } }
 

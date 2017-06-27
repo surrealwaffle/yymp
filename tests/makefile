@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++11 -I../include
+CXXFLAGS=-std=c++14 -I../include
 
 OBJ=basic_traits.o join.o filter.o setops.o
 
