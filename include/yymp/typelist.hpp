@@ -15,5 +15,9 @@
 #include <yymp/group.hpp>
 #include <yymp/filter.hpp>
 #include <yymp/traits.hpp>
+#include <yymp/for_each.hpp>
+#include <yymp/setops.hpp>
+
+#include <yymp/bind.hpp>
 
 #endif // YYMP__TYPELIST_HPP
