@@ -24,6 +24,10 @@ struct typelist {
 template< class T >
 struct is_typelist;
 
+/** \brief Defines `type` as `T` if `T` is a \ref yymp::typelist "typelist", otherwise it is defined as `typelist<T>`. */
+template< class T >
+struct retain_as_typelist;
+
 /** \brief A compile-time constant whose `value` is the length of the type sequence \a Ts. */
 template< class TypeList >
 struct size;
@@ -45,6 +49,16 @@ struct is_typelist : std::false_type { };
 
 template< class... Ts >
 struct is_typelist< typelist< Ts... > > : std::true_type { };
+
+template< class T >
+struct retain_as_typelist {
+    using type = typelist< T >;
+};
+
+template< class... Ts >
+struct retain_as_typelist< typelist< Ts... > > { 
+    using type = typelist< Ts... >;
+};
 
 template< class... Ts >
 struct size< typelist< Ts... > > : std::integral_constant< decltype(sizeof...(Ts)), sizeof...(Ts) > { };
