@@ -30,6 +30,9 @@
  *   multiple-types typelist:   value is true
  *   non-typelist:              can be taken, but class undefined
  *
+ * class_type_parameters
+ *   class that is not instantiated from a template             result is empty typelist
+ *   class that is instantiated from template of type params    result is a typelist of type params
  */
  
 #include <yymp/typelist_fwd.hpp>
@@ -84,4 +87,16 @@ static_assert(is_not_empty<typelist<fwd_type>>::value, "singleton typelist must 
 static_assert(is_not_empty<typelist<void>>::value, "singleton typelist must not be considered empty");
 static_assert(is_not_empty<typelist<fwd_type, fwd_type, int, void>>::value, "non-empty typelist must not be considered empty");
 is_not_empty<fwd_type>* t3_0; // is_not_empty of non-typelist can be taken, but not necessarily defined
-    
+
+/* ******************
+ * class_type_parameters
+ */
+
+#include <type_traits>
+using ::yymp::class_type_parameters;
+
+struct NonTemplateInstance;
+template< class... > struct Template;
+
+static_assert(std::is_same<typename class_type_parameters<NonTemplateInstance>::type, typelist<>>(), "non-class template instance must yield the empty typelist");
+static_assert(std::is_same<typename class_type_parameters<Template<int, char, void, void*, int&>>::type, typelist<int, char, void, void*, int&>>(), "class template instance must yield the type parameters used to instantiate it");

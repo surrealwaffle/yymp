@@ -40,6 +40,14 @@ struct is_empty;
 template< class TypeList >
 struct is_not_empty;
 
+/** \brief Defines `type` as the type parameters supplied to instantiate `T` from its class template, only for templates of solely type parameters.
+ *
+ * If `T` is not instantiated from a class template, then `type` is the empty \ref yymp::typelist "typelist".
+ * Recall that a template alias is not a class template.
+ */
+template< class T >
+struct class_type_parameters;
+
 /* ***************************
  * IMPLEMENTATION
  */
@@ -74,6 +82,16 @@ struct is_not_empty< typelist< Ts... > > : std::true_type { };
 
 template< >
 struct is_not_empty< typelist< > > : std::false_type { };
+
+template< class T >
+struct class_type_parameters {
+    using type = typelist<>;
+};
+
+template< template<class...> class Template, class... Types >
+struct class_type_parameters< Template<Types...> > {
+    using type = typelist< Types... >;
+};
 
 }
 
