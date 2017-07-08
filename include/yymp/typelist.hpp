@@ -17,6 +17,7 @@
 #include <yymp/traits.hpp>
 #include <yymp/for_each.hpp>
 #include <yymp/setops.hpp>
+#include <yymp/conversions.hpp>
 
 #include <yymp/bind.hpp>
 
