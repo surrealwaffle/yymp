@@ -10,17 +10,7 @@
 #include <utility> // std::integer_sequence
 
 using yymp::typelist;
-using yymp::as_typelist;
-
 using std::is_same;
-
-struct T;
-
-///////////////////////
-// as_typelist
-
-static_assert(is_same<typename as_typelist<typelist<T>>::type, typelist<T>>(), "as_typelist must map a typelist to itself");
-static_assert(is_same<typename as_typelist<T>::type, typelist<T>>(), "as_typelist must map a non-typelist T to a singleton typelist containing T");
 
 ///////////////////////
 // typelist <-> integer_sequence

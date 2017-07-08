@@ -10,7 +10,7 @@
 #ifndef YYMP__CONVERSIONS_HPP
 #define YYMP__CONVERSIONS_HPP
 
-#include <type_traits>  // std::conditional, std::integral_constant
+#include <type_traits>  // std::integral_constant
 #include <utility>      // std::integer_sequence
 
 #include <yymp/typelist_fwd.hpp> // yymp::is_typelist
@@ -20,11 +20,6 @@ namespace yymp {
 /////////////////////////////////
 // DECLARATIONS
 //
-
-/** \brief Defines `type` as `T` if `T` is a \ref yymp::typelist "typelist", otherwise `type` is a \ref yymp::typelist "typelist" containing only `T`. 
- */
-template< class T >
-using as_typelist = std::conditional< yymp::is_typelist<T>::value, T, typelist<T> >;
 
 #if __cpp_lib_integer_sequence >= 201304
 /** \brief Converts a `std::integer_sequence` to a \ref yymp::typelist "typelist" of `std::integral_constant`s of the same type. 
