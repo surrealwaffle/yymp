@@ -1,5 +1,5 @@
 # yymp
-*yymp* is a typelist manipulation library for C++11, C++14, and C++17.
+*yymp* is a typelist manipulation library for C++14 and C++17.
 
 # Requirements
 A C++ compiler supporting at least the C++11 standard.

@@ -6,9 +6,9 @@
 #ifndef YYMP__FOR_EACH_HPP
 #define YYMP__FOR_EACH_HPP
 
-#include <cstddef>
+#include <cstddef> // std::size_t
 
-#include <utility>
+#include <utility> // std::move, std::integer_sequence
 
 #include <yymp/typelist_fwd.hpp>
 
@@ -24,18 +24,30 @@ struct type_value {
     using type = T;
 };
 
-/** \brief Calls \a f on `type_value<T>{}` for each type `T` in \a types, in order.
+/** \brief Calls \a f on `type_value<T>{}` for each type `T` in \a Ts, in order.
  *
  * \return `std::move(f)`
  */
 template< class... Ts, class UnaryFunction >
-constexpr UnaryFunction for_each(typelist<Ts...> types, UnaryFunction f);
+constexpr UnaryFunction for_each(typelist<Ts...>, UnaryFunction f);
+
+/** \brief Calls \a f on `std::integral_constant`s whose values come from `Is`, in order.
+ *
+ * \return `std::move(f)`
+ */
+template< class T, T... Is, class UnaryFunction >
+constexpr UnaryFunction for_each(::std::integer_sequence<T, Is...>, UnaryFunction f);
 
 #if __cpp_fold_expressions >= 201411
 
 template< class... Ts, class UnaryFunction >
 constexpr UnaryFunction for_each(typelist<Ts...>, UnaryFunction f) {
     return ((..., (f(type_value<Ts>{}), void())) , std::move(f));
+}
+
+template< class T, T... Is, class UnaryFunction >
+constexpr UnaryFunction for_each(::std::integer_sequence<T, Is...>, UnaryFunction f) {
+    return ((..., (f(::std::integral_constant<T, Is>{}), void())) , std::move(f));
 }
 
 #elif __cpp_constexpr >= 201304
@@ -47,23 +59,14 @@ constexpr UnaryFunction for_each(typelist<Ts...>, UnaryFunction f) {
     return std::move(f);
 }
 
-#else
-
-namespace detail {
-    template< std::size_t N, class UnaryFunction >
-    constexpr UnaryFunction discard(int const (&)[N], UnaryFunction f) {
-        return std::move(f);
-    }
+template< class T, T... Is, class UnaryFunction >
+constexpr UnaryFunction for_each(::std::integer_sequence<T, Is...>, UnaryFunction f) {
+    using discard = int[sizeof...(Is) + 1];
+    (void)discard{(f(::std::integral_constant<T, Is>{}), void(), 0)...};
+    return std::move(f);
 }
 
-// requires a bit of a hack to make this work in C++11
-template< class... Ts, class UnaryFunction >
-constexpr UnaryFunction for_each(typelist<Ts...>, UnaryFunction f) {
-    using discard = int[sizeof...(Ts) + 1];
-    return ::yymp::detail::discard(discard{(f(type_value<Ts>{}), void(), 0)...}, std::move(f));
-}
-
-#endif
+#endif // __cpp_fold_expressions >= 201411
 
 }
 
