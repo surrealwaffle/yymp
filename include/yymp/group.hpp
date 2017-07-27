@@ -79,24 +79,24 @@ struct group_by< Selector, typelist< Ts... > > {
     struct join_op {
         using key = typename Selector< T >::type;
 
-        using transformed_type = typename std::conditional<
-            std::is_same<key, group_suppress>::value,
-            GroupsTypeList,
-            typename transform<
-                detail::make_join_key_group< key, T >::template transform,
-                GroupsTypeList
-            >::type
-        >::type;
+        using transformed_type = typename transform<
+            detail::make_join_key_group< key, T >::template transform,
+            GroupsTypeList
+        >::type; // adds T under group key if key exists in GroupsTypeList, otherwise unchanged
 
         using type = typename std::conditional<
-            std::is_same< transformed_type, GroupsTypeList >::value,
-            typename join<
-                GroupsTypeList,
-                typelist< group< key, typelist< T > > >
-            >::type,
-            transformed_type
-        >::type;    // appends group< Key, T > to GroupsTypeList if no group of Key was in GroupsTypeList
+            std::is_same<key, group_suppress>::value,
+            GroupsTypeList,
+            typename std::conditional<
+                std::is_same< transformed_type, GroupsTypeList >::value,
+                typename join<
+                    GroupsTypeList,
+                    typelist< group< key, typelist< T > > >
+                >::type,
+                transformed_type
+            >::type // appends group< Key, T > to GroupsTypeList if no group of Key was in GroupsTypeList
                     // otherwise, GroupsTypeList Key group has T appended to it (transformed_type)
+        >::type;
     };
 
     /** \brief The result of grouping the type sequence \a Ts under \a Selector. */
