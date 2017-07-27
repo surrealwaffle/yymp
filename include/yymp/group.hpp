@@ -79,9 +79,13 @@ struct group_by< Selector, typelist< Ts... > > {
     struct join_op {
         using key = typename Selector< T >::type;
 
-        using transformed_type = typename transform<
-            detail::make_join_key_group< key, T >::template transform,
-            GroupsTypeList
+        using transformed_type = typename std::conditional<
+            std::is_same<key, group_suppress>::value,
+            GroupsTypeList,
+            typename transform<
+                detail::make_join_key_group< key, T >::template transform,
+                GroupsTypeList
+            >::type
         >::type;
 
         using type = typename std::conditional<
