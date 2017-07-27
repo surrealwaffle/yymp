@@ -48,6 +48,9 @@ struct is_not_empty;
 template< class T >
 struct class_type_parameters;
 
+/** \brief As the result of a selector in \ref yymp::group_by, indicates that the processed type should be excluded from grouping. */ 
+struct group_suppress;
+
 /* ***************************
  * IMPLEMENTATION
  */
@@ -92,6 +95,8 @@ template< template<class...> class Template, class... Types >
 struct class_type_parameters< Template<Types...> > {
     using type = typelist< Types... >;
 };
+
+struct group_suppress { };
 
 }
 

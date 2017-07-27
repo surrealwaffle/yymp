@@ -27,6 +27,8 @@ struct get_group_key;
 template< class Group >
 struct get_group_types;
 
+struct group_suppress;
+
 template< template< class... > class Selector, class TypeList >
 struct group_by;
 
