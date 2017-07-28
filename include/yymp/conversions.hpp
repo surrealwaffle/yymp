@@ -22,18 +22,12 @@ namespace yymp {
 //
 
 #if __cpp_lib_integer_sequence >= 201304
-/** \brief Converts a `std::integer_sequence` to a \ref yymp::typelist "typelist" of `std::integral_constant`s of the same type. 
- *
- * Requires C++14 or `std::integer_sequence`.
- */
+/** \brief Converts a `std::integer_sequence` to a \ref yymp::typelist "typelist" of `std::integral_constant`s of the same type. */
 template< class IndexSequence >
 struct integer_sequence_to_typelist;
 
-/** \brief Converts a \ref yymp::typelist "typelist" of homogeneous `std::integral_constant`s to a `std::integer_sequence` of the same type.
- *
- * Requires C++14 or `std::integer_sequence`.
- */
-template< class TypeList >
+/** \brief Converts a \ref yymp::typelist "typelist" of homogeneous `std::integral_constant`s to a `std::integer_sequence` of the same type. */
+template< class TypeList, class... ValueType >
 struct typelist_to_integer_sequence;
 #endif
 
@@ -47,8 +41,13 @@ struct integer_sequence_to_typelist< ::std::integer_sequence< T, Integers... > >
     using type = typelist< ::std::integral_constant<T, Integers>... >;
 };
 
-template< class T, T... Integers >
-struct typelist_to_integer_sequence< typelist< std::integral_constant<T, Integers>... > > {
+template< class ValueType >
+struct typelist_to_integer_sequence< typelist<>, ValueType > {
+    using type = ::std::integer_sequence<ValueType>;
+};
+
+template< class T, T... Integers, class... Ignored >
+struct typelist_to_integer_sequence< typelist< std::integral_constant<T, Integers>... >, Ignored... > {
     using type = ::std::integer_sequence<T, Integers...>;
 };
 #endif

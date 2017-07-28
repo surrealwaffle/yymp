@@ -6,8 +6,12 @@
 #ifndef YYMP__FILTER_HPP
 #define YYMP__FILTER_HPP
 
-#include <yymp/typelist_fwd.hpp>
+#include <cstddef> // std::size_t
 
+#include <yymp/typelist_fwd.hpp>
+#include <yymp/join.hpp>
+#include <yymp/expand.hpp>
+#include <yymp/conversions.hpp>
 #include <yymp/transform.hpp>
 #include <yymp/group.hpp>
 
@@ -33,12 +37,13 @@ struct filter_duplicates;
 template< template< class... > class Predicate, class TypeList >
 struct indices_where;
 
-/** \brief Retrieves the indices of \a T in \a TypeList , as the `std::index_sequence` type member `type`. 
- *
- * Requires C++14 or higher, or `std::integer_sequence`s to be available.
- */
+/** \brief Retrieves the indices of \a T in \a TypeList , as the `std::index_sequence` type member `type`. */
 template< class T, class TypeList >
 struct indices_of;
+
+/** \brief Retrieves a `std::index_sequence` where each type `T` in \a Types is expanded to the indices of type `T` in \a Indexer. */
+template< class Indexer, class Types >
+struct indices_within;
 
 /** \brief Retains all types `T` in \a Ts for which <code>Predicate<T>::value</code> evaluates to \c true in-order as \ref yymp::typelist "typelist" `type`.
  *
@@ -131,6 +136,26 @@ struct indices_of< T, typelist<Ts...> > {
     using is_T = std::is_same< T, U >;
     
     using type = typename indices_where< is_T, TypeList >::type;
+};
+
+template< class... Indexer, class... Ts >
+struct indices_within< typelist<Indexer...>, typelist<Ts...> > {
+    using indexer = typelist<Indexer...>;
+    using types = typelist<Ts...>;
+    
+    template< class T >
+    using indices_for = typename integer_sequence_to_typelist<typename indices_of<T, indexer>::type>::type;
+    
+    using type = typename typelist_to_integer_sequence<
+        typename expand<
+            join,
+            typename transform<
+                indices_for,
+                types
+            >::type
+        >::type,
+        std::size_t
+    >::type;
 };
 
 }
