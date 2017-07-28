@@ -24,6 +24,10 @@ struct typelist {
 template< class T >
 struct is_typelist;
 
+/** \brief Defines `type` as the first type in \a TypeList. */
+template< class TypeList >
+struct first;
+
 /** \brief Defines `type` as `T` if `T` is a \ref yymp::typelist "typelist", otherwise it is defined as `typelist<T>`. */
 template< class T >
 struct retain_as_typelist;
@@ -60,6 +64,11 @@ struct is_typelist : std::false_type { };
 
 template< class... Ts >
 struct is_typelist< typelist< Ts... > > : std::true_type { };
+
+template< class T, class... Ts >
+struct first<typelist<T, Ts...>> {
+    using type = T;
+};
 
 template< class T >
 struct retain_as_typelist {
