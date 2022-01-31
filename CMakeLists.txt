@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(yymp
     VERSION 1.0.0
-    DESCRIPTION "A header-only library of random stuff I find myself needing."
+    DESCRIPTION "A header-only library of random stuff."
     HOMEPAGE_URL "https://github.com/surrealwaffle/yymp"
 )
 
