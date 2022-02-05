@@ -78,8 +78,10 @@ namespace yymp
      * \brief A `TransformationTrait` providing `type` as a #typelist of the
      *        type parameters for some template specialization \a T.
      *
-     * The template parameters for the class template used to create \a T must
-     * consist solely of type parameters.
+     * If \a T is not of the form `Template<TypeArgs...>` where `Template` is 
+     * the class template used to instantiate \a T and `TypeArgs` are the 
+     * type template arguments to `Template`, then the result `type` is 
+     * `typelist<>`.
      */
     template<class T>
     struct template_type_parameters;
@@ -510,8 +512,8 @@ namespace yymp
     struct is_nonempty_typelist<typelist<Types...>>
         : std::bool_constant<sizeof...(Types) != 0> { };
     
-    template<class TypeList>
-    struct typelist_first { };
+    template<>
+    struct typelist_first<typelist<>> { };
     
     template<typename First, typename... Rest>
     struct typelist_first<typelist<First, Rest...>> { using type = First; };
@@ -526,6 +528,9 @@ namespace yymp
     template<typename... Types>
     struct typelist_size<typelist<Types...>>
         : std::integral_constant<::std::size_t, sizeof...(Types)> { };
+    
+    template<class T>
+    struct template_type_parameters { using type = typelist<>; };
     
     template<template <class...> class Template, typename... Types>
     struct template_type_parameters<Template<Types...>>
@@ -548,6 +553,21 @@ namespace yymp
         >;
     };
     
+    template<>
+    struct typelist_join<> { using type = typelist<>; };
+    
+    template<typename... Types>
+    struct typelist_join<typelist<Types...>>
+    {
+        using type = typelist<Types...>;
+    };
+    
+    template<typename... ATypes, typename... BTypes>
+    struct typelist_join<typelist<ATypes...>, typelist<BTypes...>>
+    {
+        using type = typelist<ATypes..., BTypes...>;
+    };
+    
     template<class... TypeLists>
         requires (is_typelist<TypeLists>::value && ...)
     struct typelist_join
@@ -557,23 +577,12 @@ namespace yymp
         >::as_typelist;
     };
     
-    template<typename... Types>
-    struct typelist_join<typelist<Types...>>
-    {
-        using type = typelist<Types...>;
-    };
-    
     template<typename... Types, typename T>
     struct typelist_append<typelist<Types...>, T>
     {
         using type = typelist<Types..., T>;
     };
-    
-    template<typename... ATypes, typename... BTypes>
-    struct typelist<typelist<ATypes...>, typelist<BTypes...>>
-    {
-        using type = typelist<ATypes..., BTypes...>;
-    };
+   
     
     template<template<typename...> class TransformationTrait, typename... Types>
     struct typelist_transform<TransformationTrait, typelist<Types...>>
