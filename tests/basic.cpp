@@ -1,32 +1,4 @@
-//          Copyright Thomas Goehner 2017
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
-
-/* Test cases:
- * size (section size_tests0)
- *   size of empty typelist:                    value is 0
- *   size of singleton list:                    value is 1
- *   size of typelist with n distinct types:    value is n
- *   size of typelsit with n of the same types: value is n
- *   size<non-typelist>:                        can be taken, but class undefined
- *
- * is_empty (section is_empty_tests0)
- *   empty typelist:            value is true
- *   singleton typelist:        value is false
- *   multiple-types typelist:   value is false
- *   non-typelist:              can be taken, but class undefined
- *
- * is_not_empty (section is_not_empty_tests0)
- *   empty typelist:            value is false
- *   singleton typelist:        value is true
- *   multiple-types typelist:   value is true
- *   non-typelist:              can be taken, but class undefined
- *
- * class_type_parameters
- *   class that is not instantiated from a template             result is empty typelist
- *   class that is instantiated from template of type params    result is a typelist of type params
- */
+// SPDX-License-Identifier: BSL-1.0
 
 #include <concepts>
 #include <type_traits>
