@@ -1,6 +1,6 @@
 # yymp
 *yymp* is a library of some miscellaneous items I've created:
- * a `typelist` and accompanying templates for manipulation.
+ * typelist` and accompanying templates for manipulation.
 
 # Requirements
  * A C++ compiler supporting C++20
@@ -51,6 +51,17 @@ using no_duplicates = yymp::typelist_filter_duplicates_t<my_joined_types>;
 
 See [`yymp/typelist.hpp`](include/yymp/typelist.hpp) for more ways to use 
 `typelist`s.
+
+The following concepts may also be of interest:
+```cpp
+// Passes if there is EXACTLY one occurrence of T among Types
+template<typename T, typename... Types>
+concept unique_among = ...;
+
+// Passes if there is AT LEAST one occurrence of T among Types
+template<typename T, typename... Types>
+concept any_among = ...;
+```
 
 # License
 *yymp* is licensed under the [Boost Software License](https://github.com/surrealwaffle/yymp/blob/master/LICENSE_1_0.txt).
