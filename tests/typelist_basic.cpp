@@ -453,6 +453,19 @@ static_assert(
     ).result.value() == sizeof(std::int32_t)
 );
 
+/* **********************************
+ * unique_in_typelist/any_in_typelist
+ */
+static_assert(!unique_among<void>);
+static_assert(!unique_among<void, int, char, custom>);
+static_assert(!unique_among<void, int, char, custom, void, void>);
+static_assert(unique_among<void, int, char, custom, void>);
+
+static_assert(!any_among<void>);
+static_assert(!any_among<void, int, char, custom>);
+static_assert(any_among<void, int, char, custom, void, void>);
+static_assert(any_among<void, int, char, custom, void>);
+
 int main()
 {
     return 0;
