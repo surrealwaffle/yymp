@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: BSL-1.0
 
+#include <cstdint>
+
 #include <concepts>
+#include <optional>
 #include <type_traits>
 
 #include <yymp/typelist.hpp>
@@ -408,3 +411,44 @@ static_assert(same_as<
     typelist_group_by_t<std::is_pointer, typelist<int*, char, custom>>,
     typelist<typelist<int*>, typelist<char, custom>>
 >);
+
+/* *******************
+ * for_each (typelist)
+ */
+
+template<::std::size_t I>
+class basic_unary_test_function
+{
+private:
+    ::std::size_t index = 0;
+    
+public:
+    std::optional<::std::size_t> result;
+    
+    template<typename T>
+    constexpr auto operator()(type_marker<T>) noexcept
+    {
+        if (index == I)
+            result = std::make_optional(sizeof(T));
+        ++index;
+    }
+};
+
+static_assert(
+    for_each(
+        typelist<std::int8_t, std::int16_t, std::int32_t>{},
+        basic_unary_test_function<0>{}
+    ).result.value() == sizeof(std::int8_t)
+);
+static_assert(
+    for_each(
+        typelist<std::int8_t, std::int16_t, std::int32_t>{},
+        basic_unary_test_function<1>{}
+    ).result.value() == sizeof(std::int16_t)
+);
+static_assert(
+    for_each(
+        typelist<std::int8_t, std::int16_t, std::int32_t>{},
+        basic_unary_test_function<2>{}
+    ).result.value() == sizeof(std::int32_t)
+);
