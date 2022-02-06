@@ -765,7 +765,7 @@ namespace yymp
     constexpr
     UnaryFunction for_each(typelist<Types...>, UnaryFunction f)
     {
-        ((f(type_marker<Types>{}), void()), ...);
+        (((void)f(type_marker<Types>{}), void()), ...);
         return ::std::move(f);
     }
 }
