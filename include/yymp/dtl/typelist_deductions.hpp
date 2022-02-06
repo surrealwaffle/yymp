@@ -78,17 +78,25 @@ namespace yymp::dtl::typelist_deductions
     { 
         static inline constexpr ::std::size_t total_size
             = (::std::size_t{0} + ... + TypeLists::size);
+    };
+    
+    template<
+        class TypeLists,
+        class TotalIndexSequence = ::std::make_index_sequence<
+            wide_deduction_list<TypeLists>::total_size
+        >
+    > struct join_impl;
+    
+    template<class... TypeLists, ::std::size_t... I>
+    struct join_impl<
+        ::yymp::typelist<TypeLists...>, 
+        ::std::index_sequence<I...>
+    > {
+        static constexpr wide_deduction_list<typelist<TypeLists...>> wdl = {};
         
-        using as_typelist = decltype(
-            [] <::std::size_t... Js> 
-            (::std::index_sequence<Js...>) constexpr
-            {
-                return ::yymp::typelist<decltype(
-                    (deduce_type<Js>)(::std::declval<wide_deduction_list>())
-                )...>{};
-            }(::std::make_index_sequence<total_size>{})
-        );
-
+        using type = ::yymp::typelist<decltype(
+            ::yymp::dtl::typelist_deductions::deduce_type<I>(wdl)
+        )...>;
     };
 }
 

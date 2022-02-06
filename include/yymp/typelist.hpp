@@ -590,9 +590,9 @@ namespace yymp
         requires (is_typelist<TypeLists>::value && ...)
     struct typelist_join
     {
-        using type = typename ::yymp::dtl::typelist_deductions::wide_deduction_list<
+        using type = typename ::yymp::dtl::typelist_deductions::join_impl<
             typelist<TypeLists...>
-        >::as_typelist;
+        >::type;
     };
     
     template<typename... Types, typename T>
@@ -766,7 +766,7 @@ namespace yymp
     constexpr
     UnaryFunction for_each(typelist<Types...>, UnaryFunction f)
     {
-        (..., (f(type_marker<Types>{}), void()));
+        ((f(type_marker<Types>{}), void()), ...);
         return ::std::move(f);
     }
 }
