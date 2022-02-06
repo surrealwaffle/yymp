@@ -452,3 +452,8 @@ static_assert(
         basic_unary_test_function<2>{}
     ).result.value() == sizeof(std::int32_t)
 );
+
+int main()
+{
+    return 0;
+}
