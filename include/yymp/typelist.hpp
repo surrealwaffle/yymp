@@ -5,13 +5,15 @@
 
 #include <cstddef>
 
+#include <array>
 #include <type_traits>
 #include <utility>
 
 #include <yymp/utility.hpp>
 
-#include <yymp/dtl/typelist_deductions.hpp>
 #include <yymp/dtl/typelist_accumulation.hpp>
+#include <yymp/dtl/typelist_deductions.hpp>
+#include <yymp/dtl/typelist_indexing.hpp>
 
 namespace yymp
 {
@@ -141,11 +143,22 @@ namespace yymp
      * \brief A `TransformationTrait` providing `type` as `Template<Types...>`
      *        where \a TypeList is `typelist<Types...>`.
      *
-     * \tparam Template The class template to expand into.
-     * \tparam TypeList The #typelist containing the types to expand with.
+     * \tparam Template The class template to expand.
+     * \tparam TypeList The #typelist of the types to expand with.
      */
     template<template<typename...> class Template, class TypeList>
     struct typelist_expand;
+
+    /**
+     * \brief A `TransformationTrait` providing `type` as 
+     *        `Template<Types...>::type` where \a TypeList is 
+     *        `typelist<Types...>`.
+     *
+     * \tparam TransformationTrait The trait to expand into.
+     * \tparam TypeList            The #typelist of the types to expand with.
+     */
+    template<template<typename...> class TransformationTrait, class TypeList>
+    struct typelist_expand_trait;
     
     /**
      * \brief A `TransformationTrait` providing `type` as a left-to-right 
@@ -253,7 +266,7 @@ namespace yymp
      * \tparam UnaryTypeTrait The trait used to find types.
      * \tparam TypeList       The #typelist to search.
      */
-    template<template<class...> class UnaryTypeTrait, class TypeList>
+    template<template<typename...> class UnaryTypeTrait, class TypeList>
         requires is_typelist<TypeList>::value
     struct typelist_count_where;
     
@@ -265,6 +278,7 @@ namespace yymp
      * \tparam TypeList The #typelist.
      */
     template<typename T, class TypeList>
+        requires is_typelist<TypeList>::value
     struct typelist_indices_of;
     
     /**
@@ -278,7 +292,7 @@ namespace yymp
      * \tparam UnaryTypeTrait The trait used to find types.
      * \tparam TypeList       The #typelist.
      */
-    template<template<class...> class UnaryTypeTrait, class TypeList>
+    template<template<typename...> class UnaryTypeTrait, class TypeList>
         requires is_typelist<TypeList>::value
     struct typelist_indices_where;
     
@@ -293,7 +307,7 @@ namespace yymp
      * \tparam UnaryTypeTrait The trait to filter types.
      * \tparam TypeList       The #typelist to filter.
      */
-    template<template<class...> class UnaryTypeTrait, class TypeList>
+    template<template<typename...> class UnaryTypeTrait, class TypeList>
         requires is_typelist<TypeList>::value
     struct typelist_filter;
     
@@ -367,6 +381,10 @@ namespace yymp
     using typelist_expand_t
         = typename typelist_expand<Template, TypeList>::type;
     
+    template<template<typename...> class TransformationTrait, class TypeList>
+    using typelist_expand_trait_t
+        = typename typelist_expand_trait<TransformationTrait, TypeList>::type;
+    
     template<
         template<typename...> class BinaryAccumulator,
         typename Init,
@@ -402,19 +420,19 @@ namespace yymp
     inline constexpr ::std::size_t typelist_count_of_v
         = typelist_count_of<T, TypeList>::value;
     
-    template<template<class...> class UnaryTypeTrait, class TypeList>
-    using typelist_count_where_v
+    template<template<typename...> class UnaryTypeTrait, class TypeList>
+    inline constexpr ::std::size_t typelist_count_where_v
         = typelist_count_where<UnaryTypeTrait, TypeList>::value;
     
     template<typename T, class TypeList>
     using typelist_indices_of_t
         = typename typelist_indices_of<T, TypeList>::type;
     
-    template<template<class...> class UnaryTypeTrait, class TypeList>
+    template<template<typename...> class UnaryTypeTrait, class TypeList>
     using typelist_indices_where_t
         = typename typelist_indices_where<UnaryTypeTrait, TypeList>::type;
     
-    template<template<class...> class UnaryTypeTrait, class TypeList>
+    template<template<typename...> class UnaryTypeTrait, class TypeList>
     using typelist_filter_t
         = typename typelist_filter<UnaryTypeTrait, TypeList>::type;
     
@@ -592,6 +610,10 @@ namespace yymp
     struct typelist_expand<Template, typelist<Types...>>
     { using type = Template<Types...>; };
     
+    template<template<typename...> class TransformationTrait, typename... Types>
+    struct typelist_expand_trait<TransformationTrait, typelist<Types...>>
+    { using type = typename TransformationTrait<Types...>::type; };
+    
     template<
         template<typename...> class BinaryAccumulator, 
         typename Init,
@@ -610,17 +632,17 @@ namespace yymp
     };
     
     template<class TypeList, typename T>
-        requires is_typelist<TypeList>::value && unique_in_typelist<T, TypeList>
+        requires is_typelist<TypeList>::value
     struct typelist_unique_accumulator
     {
-        using type = TypeList;
+        using type = typename typelist_append<TypeList, T>::type;
     };
     
     template<typename... Types, typename T>
-        requires (!unique_in_typelist<T, typelist<Types...>>)
+        requires unique_in_typelist<T, typelist<Types...>>
     struct typelist_unique_accumulator<typelist<Types...>, T>
     {
-        using type = typelist<Types..., T>;
+        using type = typelist<Types...>;
     };
     
     template<typename T, typename... Types>
@@ -670,7 +692,7 @@ namespace yymp
                 + ::std::size_t{::std::is_same<T, Types>::value})
         > { };
     
-    template<template<class...> class UnaryTypeTrait, class TypeList>
+    template<template<typename...> class UnaryTypeTrait, class TypeList>
         requires is_typelist<TypeList>::value
     struct typelist_count_where
         : typelist_count_of<
@@ -678,36 +700,17 @@ namespace yymp
             typename typelist_transform<UnaryTypeTrait, TypeList>::type
         >::type { };
     
-    template<typename T, typename... Types>
-    struct typelist_indices_of<T, typelist<Types...>>
+    template<typename T, class TypeList>
+        requires is_typelist<TypeList>::value
+    struct typelist_indices_of
     {
-        private:
-            static constexpr ::std::array<bool, sizeof...(Types)> indicators {
-                ::std::is_same<T, Types>::value...
-            };
-            
-            // pair (indices, count)
-            static constexpr auto true_indices = [] () constexpr {
-                ::std::size_t count = 0;
-                ::std::array<::std::size_t, sizeof...(Types)> indices = {};
-                
-                for (::std::size_t i = 0; i < indicators.size(); ++i)
-                {
-                    if (indicators[i])
-                        indices[count++] = i;
-                }
-                
-                return ::std::make_pair(indices, count);
-            }();
-            
-        public:
-            using type = array_to_index_sequence<
-                true_indices.first, // ::std::array of indices
-                true_indices.second // number of indices
-            >;
+        using type = typename ::yymp::dtl::typelist_indexing::indices_of<
+            T,
+            TypeList
+        >::type;
     };
     
-    template<template<class...> class UnaryTypeTrait, class TypeList>
+    template<template<typename...> class UnaryTypeTrait, class TypeList>
         requires is_typelist<TypeList>::value
     struct typelist_indices_where
     {
@@ -717,7 +720,7 @@ namespace yymp
         >::type;
     };
     
-    template<template<class...> class UnaryTypeTrait, class TypeList>
+    template<template<typename...> class UnaryTypeTrait, class TypeList>
         requires is_typelist<TypeList>::value
     struct typelist_filter
     {

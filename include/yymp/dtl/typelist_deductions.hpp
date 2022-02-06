@@ -43,12 +43,20 @@ namespace yymp::dtl::typelist_deductions
         class IndexSequence = ::std::make_index_sequence<TypeList::size>
     > struct deduction_list;
     
+    template<::std::size_t MajorIndex> struct empty_deduction_list { };
+    
     template<::std::size_t Offset, typename... Types, ::std::size_t... Is>
     struct deduction_list<
         Offset, ::yymp::typelist<Types...>, ::std::index_sequence<Is...>
     > : deduction_leaf<Offset + Is, Types>... { };
     
-        
+    template<std::size_t MajorIndex, ::std::size_t Offset, class TypeList>
+    using make_deduction_list = ::std::conditional_t<
+        TypeList::size != 0,
+        deduction_list<Offset, TypeList>,
+        empty_deduction_list<MajorIndex>
+    >;
+    
     template<::std::size_t I, typename Type>
     Type
     deduce_type(const deduction_leaf<I, Type>&) noexcept; // no definition
@@ -66,8 +74,7 @@ namespace yymp::dtl::typelist_deductions
     struct wide_deduction_list<
         ::yymp::typelist<TypeLists...>,
         ::std::index_sequence<Is...>
-    >
-        : deduction_list<offsets_for<TypeLists::size>[Is], TypeLists>...
+    > : make_deduction_list<Is, offsets_for<TypeLists::size...>[Is], TypeLists>...
     { 
         static inline constexpr ::std::size_t total_size
             = (::std::size_t{0} + ... + TypeLists::size);
