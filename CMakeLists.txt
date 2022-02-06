@@ -7,7 +7,7 @@ project(yymp
 
 add_library(${PROJECT_NAME} INTERFACE)
 
-OPTION(YYMP_ENABLE_TESTING "ON to enable testing, OFF to disable" ON)
+OPTION(YYMP_ENABLE_TESTING "ON to enable testing, OFF to disable" OFF)
 
 target_compile_features(
     ${PROJECT_NAME}
