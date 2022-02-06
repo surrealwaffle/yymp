@@ -12,6 +12,9 @@ using ::std::index_sequence;
 struct custom;
 template< class... > struct Template;
 
+template<typename T>
+concept has_nested_type = requires { typename T::type; };
+
 /* **********************
  * Categorization traits:
  *   is_typelist,
@@ -39,7 +42,7 @@ static_assert(!is_nonempty_typelist_v<custom>);
  * typelist_first
  */
 
-static_assert(!requires { typename typelist_first_t<typelist<>>; });
+static_assert(!has_nested_type<typelist_first<typelist<>>>);
 static_assert(same_as<typelist_first_t<typelist<custom>>, custom>);
 static_assert(same_as<typelist_first_t<typelist<custom, void, char>>, custom>);
 
@@ -49,7 +52,7 @@ static_assert(same_as<typelist_first_t<typelist<custom, void, char>>, custom>);
 
 static_assert(same_as<retain_as_typelist_t<typelist<>>, typelist<>>);
 static_assert(same_as<retain_as_typelist_t<typelist<custom>>, typelist<custom>>);
-static_assert(same_as<retain_as_typelist_t<custom, typelist<custom>>);
+static_assert(same_as<retain_as_typelist_t<custom>, typelist<custom>>);
 
 /* *************
  * typelist_size
@@ -174,7 +177,7 @@ static_assert(same_as<
         typelist<>, typelist<>,
         typelist<int>, typelist<>, typelist<>,
         typelist<char>, typelist<>, typelist<>,
-        typelist<custom> typelist<>, typelist<>
+        typelist<custom>, typelist<>, typelist<>
     >, typelist<int, char, custom>
 >);
 
@@ -185,12 +188,12 @@ static_assert(same_as<
 static_assert(same_as<typelist_append_t<typelist<>, int>, typelist<int>>);
 static_assert(same_as<typelist_append_t<typelist<int>, char>, typelist<int, char>>);
 
-/* ******************
- * typelist_transform
+/* ********************************************************
+ * typelist_transform/typelist_expand/typelist_expand_trait
  */
 
 static_assert(same_as<
-    typelist_transform_t<std::make_pointer, typelist<int, char, custom>>,
+    typelist_transform_t<std::add_pointer, typelist<int, char, custom>>,
     typelist<int*, char*, custom*>
 >);
 
@@ -199,21 +202,47 @@ static_assert(same_as<
     Template<int, char, custom>
 >);
 
-/* ***************
+static_assert(same_as<
+    typelist_expand_trait_t<
+        ::std::is_same,
+        typelist<int, int>
+    >, ::std::true_type
+>);
+
+static_assert(same_as<
+    typelist_expand_trait_t<
+        ::std::is_same,
+        typelist<int, void>
+    >, ::std::false_type
+>);
+
+/* ******************************************************************
+ * typelist_accumulate
+ */
+
+static_assert(same_as<
+    typelist_accumulate_t<
+        typelist_append,
+        typelist<>,
+        typelist<int, char, custom>
+    >, typelist<int, char, custom>
+>);
+
+/* ******************************************************************
  * typelist_all_of/typelist_any_of/typelist_none_of/typelist_count_of
  */
 
 static_assert(typelist_all_of_v<custom, typelist<>>);
-static_assert(!typelist_all_of_v<custom, typelist<int, char, custom>);
-static_assert(!typelist_all_of_v<void, typelist<int, char, custom>);
+static_assert(!typelist_all_of_v<custom, typelist<int, char, custom>>);
+static_assert(!typelist_all_of_v<void, typelist<int, char, custom>>);
 
 static_assert(!typelist_any_of_v<custom, typelist<>>);
-static_assert(typelist_any_of_v<custom, typelist<int, char, custom>);
-static_assert(!typelist_any_of_v<void, typelist<int, char, custom>);
+static_assert(typelist_any_of_v<custom, typelist<int, char, custom>>);
+static_assert(!typelist_any_of_v<void, typelist<int, char, custom>>);
 
 static_assert(typelist_none_of_v<custom, typelist<>>);
-static_assert(!typelist_none_of_v<custom, typelist<int, char, custom>);
-static_assert(typelist_none_of_v<void, typelist<int, char, custom>);
+static_assert(!typelist_none_of_v<custom, typelist<int, char, custom>>);
+static_assert(typelist_none_of_v<void, typelist<int, char, custom>>);
 
 static_assert(typelist_count_of_v<custom, typelist<>> == 0);
 static_assert(typelist_count_of_v<custom, typelist<int, char, custom>> == 1);
@@ -225,19 +254,19 @@ static_assert(typelist_count_of_v<void, typelist<int, char, custom>> == 0);
  */
 
 static_assert(typelist_all_where_v<std::is_pointer, typelist<>>);
-static_assert(typelist_all_where_v<std::is_pointer, typelist<int*, char*, custom*>);
-static_assert(!typelist_all_where_v<std::is_pointer, typelist<int*, char*, custom>);
-static_assert(!typelist_all_where_v<std::is_pointer, typelist<int, char, custom>);
+static_assert(typelist_all_where_v<std::is_pointer, typelist<int*, char*, custom*>>);
+static_assert(!typelist_all_where_v<std::is_pointer, typelist<int*, char*, custom>>);
+static_assert(!typelist_all_where_v<std::is_pointer, typelist<int, char, custom>>);
 
 static_assert(!typelist_any_where_v<std::is_pointer, typelist<>>);
-static_assert(typelist_any_where_v<std::is_pointer, typelist<int*, char*, custom*>);
-static_assert(typelist_any_where_v<std::is_pointer, typelist<int*, char*, custom>);
-static_assert(!typelist_any_where_v<std::is_pointer, typelist<int, char, custom>);
+static_assert(typelist_any_where_v<std::is_pointer, typelist<int*, char*, custom*>>);
+static_assert(typelist_any_where_v<std::is_pointer, typelist<int*, char*, custom>>);
+static_assert(!typelist_any_where_v<std::is_pointer, typelist<int, char, custom>>);
 
 static_assert(typelist_none_where_v<std::is_pointer, typelist<>>);
-static_assert(!typelist_none_where_v<std::is_pointer, typelist<int*, char*, custom*>);
-static_assert(!typelist_none_where_v<std::is_pointer, typelist<int*, char*, custom>);
-static_assert(typelist_none_where_v<std::is_pointer, typelist<int, char, custom>);
+static_assert(!typelist_none_where_v<std::is_pointer, typelist<int*, char*, custom*>>);
+static_assert(!typelist_none_where_v<std::is_pointer, typelist<int*, char*, custom>>);
+static_assert(typelist_none_where_v<std::is_pointer, typelist<int, char, custom>>);
 
 static_assert(typelist_count_where_v<std::is_pointer, typelist<>> == 0);
 static_assert(typelist_count_where_v<std::is_pointer, typelist<int*, char*, custom*>> == 3);
@@ -247,7 +276,6 @@ static_assert(typelist_count_where_v<std::is_pointer, typelist<int, char, custom
 /* *******************
  * typelist_indices_of
  */
-
 static_assert(same_as<
     typelist_indices_of_t<custom, typelist<>>,
     index_sequence<>
