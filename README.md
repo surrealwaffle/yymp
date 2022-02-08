@@ -1,6 +1,8 @@
 # yymp
 *yymp* is a library of some miscellaneous items I've created:
- * `yymp::typelist` and accompanying templates for manipulation.
+ * [`yymp::typelist`](include/yymp/typelist.hpp) and accompanying templates for manipulation;
+ * [`yymp::wref_tuple`](include/yymp/wref_tuple.hpp), a tuple for providing a flat view of multiple tuple references;
+ * [`yymp::stuple`](include/yymp/stuple.hpp), an aggregate tuple with a focus on improved compilation times.
 
 # Requirements
  * A C++ compiler supporting C++20
@@ -62,6 +64,12 @@ concept unique_among = ...;
 template<typename T, typename... Types>
 concept any_among = ...;
 ```
+
+# stuple
+
+To see the difference in speed between `std::tuple` and `yymp::stuple`, see the 
+[`stuple` stress test preamble](tests/stuple_stress.cpp). Your results may 
+differ, depending on the implementation's `std::tuple`.
 
 # License
 *yymp* is licensed under the [Boost Software License](https://github.com/surrealwaffle/yymp/blob/master/LICENSE_1_0.txt).
