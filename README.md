@@ -1,6 +1,6 @@
 # yymp
 *yymp* is a library of some miscellaneous items I've created:
- * typelist` and accompanying templates for manipulation.
+ * `yymp::typelist` and accompanying templates for manipulation.
 
 # Requirements
  * A C++ compiler supporting C++20
@@ -49,10 +49,10 @@ using no_duplicates = yymp::typelist_filter_duplicates_t<my_joined_types>;
 // -> yymp::typelist<void, short, int, char*, void*>;
 ```
 
-See [`yymp/typelist.hpp`](include/yymp/typelist.hpp) for more ways to use 
-`typelist`s.
+See [`yymp/typelist.hpp`](include/yymp/typelist.hpp) for more.
 
-The following concepts may also be of interest:
+The following concepts may also be of interest, even if you
+are not dealing with typelists directly:
 ```cpp
 // Passes if there is EXACTLY one occurrence of T among Types
 template<typename T, typename... Types>
