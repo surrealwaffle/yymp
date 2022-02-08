@@ -67,9 +67,9 @@ concept any_among = ...;
 
 # stuple
 
-To see the difference in speed between `std::tuple` and `yymp::stuple`, see the 
-[`stuple` stress test preamble](tests/stuple_stress.cpp). Your results may 
-differ, depending on the implementation's `std::tuple`.
+For a potential use where `yymp::stuple` is a clear winner over `std::tuple`, 
+see the [`stuple` stress test preamble](tests/stuple_stress.cpp). 
+Your own results may differ, depending on the implementation's `std::tuple`.
 
 # License
 *yymp* is licensed under the [Boost Software License](https://github.com/surrealwaffle/yymp/blob/master/LICENSE_1_0.txt).
