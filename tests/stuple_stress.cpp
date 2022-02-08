@@ -20,7 +20,7 @@
  Total compile time (in seconds) on my system (using -ftime-report)
                 TEST_DEPTH=50   TEST_DEPTH=100  TEST_DEPTH=150
  std::tuple     4.85            32.05           319.47
- yymp::stuple   1.01            2.62            5.95
+ yymp::stuple   0.79             1.62             3.40
  
  $ gcc --version
  gcc.exe (Rev8, Built by MSYS2 project) 11.2.0
