@@ -33,7 +33,7 @@
 
 // Set the default test depth, if not supplied at the command line
 #ifndef TEST_DEPTH
-#   define TEST_DEPTH 150
+#   define TEST_DEPTH 100
 #endif
 
 // Imitates some type that is distinct under some non-type template parameter.
