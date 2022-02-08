@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSL-1.0
+
 /*
  This source file is used to stress yymp::stuple against std::tuple.
  
