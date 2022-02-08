@@ -41,8 +41,8 @@ template<auto> struct Unique { };
 
 // Wraps a tuple type and overloads operator+ which concatenates to the tuple 
 // on the right. 
-// If YYMP_STRESS_STD_TUPLE is defined, then yymp::stuple_cat is used.
-// Otherwise, std::tuple_cat is used.
+// If YYMP_STRESS_STD_TUPLE is defined, then std::stuple_cat is used.
+// Otherwise, yymp::stuple_cat is used.
 template<typename Tuple>
 struct tuple_catter
 {
