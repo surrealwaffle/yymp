@@ -16,6 +16,10 @@ namespace yymp
 {
     /**
      * \brief An aggregate tuple implementation.
+     *
+     * This implementation has no user-provided constructors, destructors, and
+     * assignment operators. If all of \a Types are trivial, then the `stuple`
+     * is also a trivial type.
      */
     template<typename... Types>
     struct stuple : dtl::stuple::make_impl<Types...> { };
