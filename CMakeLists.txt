@@ -7,7 +7,7 @@ project(yymp
 
 add_library(${PROJECT_NAME} INTERFACE)
 
-OPTION(YYMP_ENABLE_TESTING "ON to enable testing, OFF to disable" OFF)
+OPTION(YYMP_TESTING "ON to enable testing, OFF to disable" OFF)
 
 target_compile_features(
     ${PROJECT_NAME}
@@ -21,7 +21,7 @@ target_include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-if(YYMP_ENABLE_TESTING)
+if(YYMP_TESTING)
     enable_testing()
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
 endif()
