@@ -60,6 +60,10 @@ namespace yymp
     template<typename... Types>
     struct is_piecewise_reinitializable<stuple<Types...>&&>
         : ::std::is_move_constructible<stuple<Types...>>::type { };
+    
+    template<typename... Types>
+    struct is_piecewise_reinitializable<stuple<Types...>>
+        : ::std::is_move_constructible<stuple<Types...>>::type { };
         
     template<typename... Types>
     struct is_piecewise_nothrow_reinitializable<const stuple<Types...>&>
@@ -67,6 +71,10 @@ namespace yymp
     
     template<typename... Types>
     struct is_piecewise_nothrow_reinitializable<stuple<Types...>&&>
+        : ::std::is_nothrow_move_constructible<stuple<Types...>>::type { };
+    
+    template<typename... Types>
+    struct is_piecewise_nothrow_reinitializable<stuple<Types...>>
         : ::std::is_nothrow_move_constructible<stuple<Types...>>::type { };
 }
 
