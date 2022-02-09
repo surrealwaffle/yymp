@@ -40,17 +40,14 @@ namespace yymp
     to_stuple(Tuple&& t) noexcept(piecewise_nothrow_reinitializable<Tuple>)
     {
         using value_type = ::std::remove_cvref_t<Tuple>;
-        using index_seq 
-            = ::std::make_index_sequence<::std::tuple_size<value_type>::value>;
         
         return [&t] <::std::size_t... I> (::std::index_sequence<I...>)
         {
-            using result_type = stuple<
-                typename ::std::tuple_element<I, value_type>::type...
-            >;
+            using result_type = 
+                stuple<typename ::std::tuple_element<I, value_type>::type...>;
             
             return result_type{get<I>(::std::forward<Tuple>(t))...};
-        }(index_seq{});
+        }(::std::make_index_sequence<::std::tuple_size<value_type>::value>{});
     }
     
     /**
