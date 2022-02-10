@@ -12,8 +12,8 @@
  always doable.
  
  Usage:
-    gcc -c stress.cpp -std=c++20 -I{PATH TO YYMP INCLUDE} -DTEST_DEPTH=50 -DYYMP_STRESS_STD_TUPLE
-    gcc -c stress.cpp -std=c++20 -I{PATH TO YYMP INCLUDE} -DTEST_DEPTH=50
+    gcc -c stuple_stress.cpp -std=c++20 -I{PATH TO YYMP INCLUDE} -DTEST_DEPTH=50 -DYYMP_STRESS_STD_TUPLE
+    gcc -c stuple_stress.cpp -std=c++20 -I{PATH TO YYMP INCLUDE} -DTEST_DEPTH=50
  
  The first line tests std::tuple. The second tests yymp::stuple.
  
