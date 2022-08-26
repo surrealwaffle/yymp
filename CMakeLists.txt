@@ -1,27 +1,31 @@
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.24.1)
 project(yymp
-    VERSION 1.0.0
+    VERSION 2.0.0
     DESCRIPTION "A header-only library of random stuff."
     HOMEPAGE_URL "https://github.com/surrealwaffle/yymp"
+    LANGUAGES CXX
 )
 
-add_library(${PROJECT_NAME} INTERFACE)
+add_library(yymp_yymp INTERFACE)
+add_library(yymp::yymp ALIAS yymp_yymp)
 
-OPTION(YYMP_TESTING "ON to enable testing, OFF to disable" OFF)
+set_target_properties(yymp_yymp
+    PROPERTIES
+        EXPORT_NAME yymp
+)
 
-target_compile_features(
-    ${PROJECT_NAME}
+target_compile_features(yymp_yymp
     INTERFACE
         cxx_std_20
 )
 
-target_include_directories(
-    ${PROJECT_NAME}
+target_include_directories(yymp_yymp
     INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
 )
 
-if(YYMP_TESTING)
+include(CTest)
+if(BUILD_TESTING)
     enable_testing()
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
+    add_subdirectory(tests)
 endif()
