@@ -9,11 +9,6 @@ project(yymp
 add_library(yymp_yymp INTERFACE)
 add_library(yymp::yymp ALIAS yymp_yymp)
 
-set_target_properties(yymp_yymp
-    PROPERTIES
-        EXPORT_NAME yymp
-)
-
 target_compile_features(yymp_yymp
     INTERFACE
         cxx_std_20
