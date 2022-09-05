@@ -21,6 +21,5 @@ target_include_directories(yymp_yymp
 
 include(CTest)
 if(BUILD_TESTING)
-    enable_testing()
     add_subdirectory(tests)
 endif()
