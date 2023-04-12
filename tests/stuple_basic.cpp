@@ -66,7 +66,7 @@ constexpr stuple complex_stuple1 {5, "foo", 0.5f};
 using complex_stuple1_type = std::remove_cvref_t<decltype(complex_stuple1)>;
 
 static_assert(get<0>(complex_stuple1) == 5);
-static_assert(get<1>(complex_stuple1) == "foo");
+// static_assert(get<1>(complex_stuple1) == "foo"); // "comparison of addresses of literals has unspecified value"
 static_assert(get<2>(complex_stuple1) == 0.5f);
 static_assert(same_as<decltype(get<0>(complex_stuple1)), const int&>);
 static_assert(same_as<decltype(get<1>(complex_stuple1)), const char* const&>);
