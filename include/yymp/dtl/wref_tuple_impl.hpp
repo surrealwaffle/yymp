@@ -35,6 +35,18 @@ namespace yymp::dtl::wref_tuple
         return result;
     }();
     
+    template<std::size_t I, class... Tuples>
+      requires (I < (::std::tuple_size<::std::remove_cvref_t<Tuples>>::value + ... + std::size_t(0)))
+    constexpr std::size_t leaf_index_of = [] () constexpr {
+      constexpr auto& Biases = wide_offsets<Tuples...>;
+      
+      constexpr auto it = ::std::upper_bound(
+          Biases.cbegin(), Biases.cend(),
+          I);
+      static_assert(it != Biases.cbegin());
+      return *(it - 1);
+    }();
+    
     /**
      * \brief The leaf type of a wide reference tuple implementation.
      * 
@@ -80,22 +92,12 @@ namespace yymp::dtl::wref_tuple
         class IndexSequence, typename... Tuples
     > 
     constexpr
-    decltype(auto) find_leaf(const impl<IndexSequence, Tuples...>& t)
+    const auto& find_leaf(const impl<IndexSequence, Tuples...>& t)
         noexcept
     {
-        constexpr auto offset = [] {
-            constexpr auto& Biases = wide_offsets<Tuples...>;
-            
-            constexpr auto it = ::std::upper_bound(
-                Biases.cbegin(), Biases.cend(),
-                I);
-            static_assert(it != Biases.cbegin());
-            return *(it - 1);
-        }();
-        
         // deduce the leaf
-        return [] <typename Tuple> (const leaf<offset, Tuple>& part) 
-            -> const leaf<offset, Tuple>&
+        return [] <typename Tuple> (const leaf<leaf_index_of<I, Tuples...>, Tuple>& part) 
+            -> const auto&
         {
             return part;
         }(t);
