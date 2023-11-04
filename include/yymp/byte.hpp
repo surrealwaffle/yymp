@@ -65,7 +65,11 @@ namespace yymp
      * \param [out] d_it The output iterator receiving the bytes of \a n.
      *                   Must be able to accept all `sizeof(n)` bytes.
      */
-    template<std::integral T, std::output_iterator<const std::byte&> OutputIt>
+    template<std::integral T, typename OutputIt>
+        requires (
+            byte_enabled<std::iter_value_t<OutputIt>> &&
+            std::output_iterator<OutputIt, const std::iter_value_t<OutputIt>&>
+        )
     constexpr OutputIt emit_store(const T n, OutputIt d_it) noexcept;
     
     /**
@@ -136,7 +140,7 @@ namespace yymp
      * \return The deserialized value.
      */
     template<std::integral To, std::endian Endian, std::input_iterator It>
-        requires byte_enabled<std::iter_value_t<It>>
+       requires byte_enabled<std::iter_value_t<It>>
     [[nodiscard]] constexpr To deserialize(It it) noexcept;
     
     /**
@@ -169,11 +173,11 @@ namespace yymp
      * \tparam Endian The endianness that determines the order in which the 
      *                bytes of \a n are stored.
      */
-    template<
-        std::endian Endian, 
-        std::output_iterator<const std::byte&> OutputIt, 
-        std::integral T
-    >
+    template<std::endian Endian, typename OutputIt, std::integral T>
+        requires (
+            byte_enabled<std::iter_value_t<OutputIt>> &&
+            std::output_iterator<OutputIt, const std::iter_value_t<OutputIt>&>
+        )
     constexpr OutputIt serialize(const T n, OutputIt d_it) noexcept;
     
     /**
@@ -185,7 +189,11 @@ namespace yymp
      * \param [in]  endian The endianness that determines the order in which the
      *                     bytes of \a n are stored.
      */
-    template<std::output_iterator<const std::byte&> OutputIt, std::integral T>
+    template<typename OutputIt, std::integral T>
+        requires (
+            byte_enabled<std::iter_value_t<OutputIt>> &&
+            std::output_iterator<OutputIt, const std::iter_value_t<OutputIt>&>
+        )
     constexpr OutputIt serialize(const T n, OutputIt d_it, const std::endian endian)
         noexcept;
 }
@@ -203,28 +211,32 @@ namespace yymp
     {
         const auto bytes = [&it] <std::size_t... I> (std::index_sequence<I...>) 
         {
-           // It may be an input iterator, so we have to write it this way.
-           // The following is well-defined, because the order of evaluation between 
-           // clauses in braced init-lists is specified.
-           return std::array{((void)I, static_cast<std::byte>(*it++))...};
+            // It may be an input iterator, so we have to write it this way.
+            // The following is well-defined, because the order of evaluation 
+            // between clauses in braced init-lists is specified.
+            return std::array{((void)I, static_cast<std::byte>(*it++))...};
         }(std::make_index_sequence<sizeof(T)>{});
         
         return std::bit_cast<T>(bytes);
     }
 
-    template<std::integral T, std::output_iterator<const std::byte&> OutputIt>
+    template<std::integral T, typename OutputIt>
+        requires (
+            byte_enabled<std::iter_value_t<OutputIt>> &&
+            std::output_iterator<OutputIt, const std::iter_value_t<OutputIt>&>
+        )
     constexpr OutputIt emit_store(const T n, OutputIt d_it) noexcept
     {
         // unrolls just fine, gcc/clang recognize what we want
         using byte_array = std::array<std::byte, sizeof(n)>;
         
-        [d_it, bytes = std::bit_cast<byte_array>(n)] <std::size_t... I> 
+        return [&d_it, bytes = std::bit_cast<byte_array>(n)] <std::size_t... I> 
         (std::index_sequence<I...>)
         {
-           ((d_it[I] = bytes[I]), ...);
+            using byte_type = std::iter_value_t<OutputIt>;
+            // built-in comma operator has well-defined evaluation order
+            return ((void)(*d_it++ = static_cast<byte_type>(bytes[I])), ..., d_it);
         }(std::make_index_sequence<sizeof(T)>{});
-        
-        return d_it + sizeof(T);
     }
     
     template<std::integral T>
@@ -275,17 +287,21 @@ namespace yymp
         return convert_endian(emit_load<To>(it), endian, std::endian::native);
     }
     
-    template<
-        std::endian Endian, 
-        std::output_iterator<const std::byte&> OutputIt, 
-        std::integral T
-    >
+    template<std::endian Endian, typename OutputIt, std::integral T>
+        requires (
+            byte_enabled<std::iter_value_t<OutputIt>> &&
+            std::output_iterator<OutputIt, const std::iter_value_t<OutputIt>&>
+        )
     constexpr OutputIt serialize(const T n, OutputIt d_it) noexcept
     {
         return emit_store(convert_endian<std::endian::native, Endian>(n), d_it);
     }
     
-    template<std::output_iterator<const std::byte&> OutputIt, std::integral T>
+    template<typename OutputIt, std::integral T>
+        requires (
+            byte_enabled<std::iter_value_t<OutputIt>> &&
+            std::output_iterator<OutputIt, const std::iter_value_t<OutputIt>&>
+        )
     constexpr OutputIt serialize(const T n, OutputIt d_it, const std::endian endian)
         noexcept
     {
