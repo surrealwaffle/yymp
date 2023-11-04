@@ -10,6 +10,7 @@
 #include <concepts>
 #include <iterator>
 #include <type_traits>
+#include <utility>
 
 static_assert(
     std::endian::native == std::endian::little ||
@@ -198,13 +199,9 @@ namespace yymp
         requires std::same_as<std::byte, std::iter_value_t<It>>
     [[nodiscard]] constexpr T emit_load(It it) noexcept
     {
-        // unrolls just fine, gcc/clang recognize what we want
-        const auto bytes = [&it] {
-            std::array<std::byte, sizeof(T)> bytes{};
-            for (auto& b : bytes)
-                b = *it++;
-            return bytes;
-        }();
+        const auto bytes = [it] <std::size_t... I> (std::index_sequence<I...>) {
+           return std::array<std::byte, sizeof(T)> {it[I]...};
+        }(std::make_index_sequence<sizeof(T)>{});
         return std::bit_cast<T>(bytes);
     }
 
@@ -213,11 +210,14 @@ namespace yymp
     {
         // unrolls just fine, gcc/clang recognize what we want
         using byte_array = std::array<std::byte, sizeof(n)>;
-        const auto bytes = std::bit_cast<byte_array>(n);
-        for (const auto& b : bytes)
-            *d_it++ = b;
         
-        return d_it;
+        [d_it, bytes = std::bit_cast<byte_array>(n)] <std::size_t... I> 
+        (std::index_sequence<I...>)
+        {
+           ((d_it[I] = bytes[I]), ...);
+        }(std::make_index_sequence<sizeof(T)>{});
+        
+        return d_it + sizeof(T);
     }
     
     template<std::integral T>
