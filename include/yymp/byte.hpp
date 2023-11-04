@@ -12,6 +12,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "yymp/byte_enable.hpp"
+
 static_assert(
     std::endian::native == std::endian::little ||
     std::endian::native == std::endian::big,
@@ -48,12 +50,12 @@ namespace yymp
      *
      * \tparam T  The integral type to load.
      * \tparam It The input iterator type. 
-     *            `std::iter_value_t<It>` must be `std::byte`.
+     *            `std::iter_value_t<It>` must satisfy `byte_enabled`.
      *
      * \return The loaded integral value.
      */
     template<std::integral T, std::input_iterator It>
-        requires std::same_as<std::byte, std::iter_value_t<It>>
+        requires byte_enabled<std::iter_value_t<It>>
     [[nodiscard]] constexpr T emit_load(It it) noexcept;
     
     /**
@@ -129,12 +131,12 @@ namespace yymp
      * \tparam To     The integral type to deserialize.
      * \tparam Endian The endianness of the data loaded through \a it.
      * \tparam It     The input iterator type. 
-     *                `std::iter_value_t<It>` must be `std::byte`.
+     *                `std::iter_value_t<It>` must satisfy `byte_enabled`.
      *
      * \return The deserialized value.
      */
     template<std::integral To, std::endian Endian, std::input_iterator It>
-        requires std::same_as<std::byte, std::iter_value_t<It>>
+        requires byte_enabled<std::iter_value_t<It>>
     [[nodiscard]] constexpr To deserialize(It it) noexcept;
     
     /**
@@ -147,12 +149,12 @@ namespace yymp
      *
      * \tparam To The integral type to deserialize.
      * \tparam It The input iterator type. 
-     *            `std::iter_value_t<It>` must be `std::byte`.
+     *            `std::iter_value_t<It>` must satisfy `byte_enabled`.
      *
      * \return The deserialized value.
      */
     template<std::integral To, std::input_iterator It>
-        requires std::same_as<std::byte, std::iter_value_t<It>>
+        requires byte_enabled<std::iter_value_t<It>>
     [[nodiscard]] constexpr To deserialize(
         It it, 
         const std::endian endian) noexcept;
@@ -196,12 +198,17 @@ namespace yymp
 namespace yymp
 {
     template<std::integral T, std::input_iterator It>
-        requires std::same_as<std::byte, std::iter_value_t<It>>
+        requires byte_enabled<std::iter_value_t<It>>
     [[nodiscard]] constexpr T emit_load(It it) noexcept
     {
-        const auto bytes = [it] <std::size_t... I> (std::index_sequence<I...>) {
-           return std::array<std::byte, sizeof(T)> {it[I]...};
+        const auto bytes = [&it] <std::size_t... I> (std::index_sequence<I...>) 
+        {
+           // It may be an input iterator, so we have to write it this way.
+           // The following is well-defined, because the order of evaluation between 
+           // clauses in braced init-lists is specified.
+           return std::array{((void)I, static_cast<std::byte>(*it++))...};
         }(std::make_index_sequence<sizeof(T)>{});
+        
         return std::bit_cast<T>(bytes);
     }
 
@@ -252,14 +259,14 @@ namespace yymp
     }
     
     template<std::integral To, std::endian Endian, std::input_iterator It>
-        requires std::same_as<std::byte, std::iter_value_t<It>>
+        requires byte_enabled<std::iter_value_t<It>>
     [[nodiscard]] constexpr To deserialize(It it) noexcept
     {
         return convert_endian<Endian, std::endian::native>(emit_load<To>(it));
     }
     
     template<std::integral To, std::input_iterator It>
-        requires std::same_as<std::byte, std::iter_value_t<It>>
+        requires byte_enabled<std::iter_value_t<It>>
     [[nodiscard]] constexpr To deserialize(
         It it, 
         const std::endian endian) noexcept
