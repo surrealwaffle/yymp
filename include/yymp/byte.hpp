@@ -209,12 +209,18 @@ namespace yymp
         requires byte_enabled<std::iter_value_t<It>>
     [[nodiscard]] constexpr T emit_load(It it) noexcept
     {
-        const auto bytes = [&it] <std::size_t... I> (std::index_sequence<I...>) 
+        const auto bytes = [it] <std::size_t... I> (std::index_sequence<I...>) 
         {
-            // It may be an input iterator, so we have to write it this way.
-            // The following is well-defined, because the order of evaluation 
-            // between clauses in braced init-lists is specified.
-            return std::array{((void)I, static_cast<std::byte>(*it++))...};
+            if constexpr (std::random_access_iterator<It>) {
+                return std::array{it[I]...};
+            } else {
+                auto src = it;
+                // input_iterator
+                // It may be an input iterator, so we have to write it this way.
+                // The following is well-defined, because the order of evaluation 
+                // between clauses in braced init-lists is specified.
+                return std::array{((void)I, static_cast<std::byte>(*src++))...};
+            }
         }(std::make_index_sequence<sizeof(T)>{});
         
         return std::bit_cast<T>(bytes);
@@ -230,12 +236,19 @@ namespace yymp
         // unrolls just fine, gcc/clang recognize what we want
         using byte_array = std::array<std::byte, sizeof(n)>;
         
-        return [&d_it, bytes = std::bit_cast<byte_array>(n)] <std::size_t... I> 
+        return [it=d_it, bytes = std::bit_cast<byte_array>(n)] <std::size_t... I> 
         (std::index_sequence<I...>)
         {
             using byte_type = std::iter_value_t<OutputIt>;
-            // built-in comma operator has well-defined evaluation order
-            return ((void)(*d_it++ = static_cast<byte_type>(bytes[I])), ..., d_it);
+            if constexpr (std::random_access_iterator<OutputIt>) {
+                ((void)(it[I] = static_cast<byte_type>(bytes[I])), ...);
+                return it + sizeof(T);
+            } else {
+               // built-in comma operator has well-defined evaluation order
+               auto d_it = it;
+               ((void)(*d_it++ = static_cast<byte_type>(bytes[I])), ...);
+               return d_it;
+            }
         }(std::make_index_sequence<sizeof(T)>{});
     }
     
