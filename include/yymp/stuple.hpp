@@ -31,6 +31,36 @@ namespace yymp
     template<typename... Types>
     stuple(Types...) -> stuple<Types...>; // value-oriented deduction
     
+    // =========================================================================
+    // The following specializations provide massive improvements in compile 
+    // times when used in certain pathological cases.
+    // These specializations drastically reduce the quadratic term involved in 
+    // many chained stuple_cats.
+    
+    template<typename... Types>
+    struct is_piecewise_reinitializable<const stuple<Types...>&>
+        : ::std::is_copy_constructible<stuple<Types...>>::type { };
+    
+    template<typename... Types>
+    struct is_piecewise_reinitializable<stuple<Types...>&&>
+        : ::std::is_move_constructible<stuple<Types...>>::type { };
+    
+    template<typename... Types>
+    struct is_piecewise_reinitializable<stuple<Types...>>
+        : ::std::is_move_constructible<stuple<Types...>>::type { };
+        
+    template<typename... Types>
+    struct is_piecewise_nothrow_reinitializable<const stuple<Types...>&>
+        : ::std::is_nothrow_copy_constructible<stuple<Types...>>::type { };
+    
+    template<typename... Types>
+    struct is_piecewise_nothrow_reinitializable<stuple<Types...>&&>
+        : ::std::is_nothrow_move_constructible<stuple<Types...>>::type { };
+    
+    template<typename... Types>
+    struct is_piecewise_nothrow_reinitializable<stuple<Types...>>
+        : ::std::is_nothrow_move_constructible<stuple<Types...>>::type { };
+    
     /**
      * \brief Converts a \a Tuple to its equivalent #stuple.
      *
