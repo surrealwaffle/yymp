@@ -3,6 +3,7 @@
 #ifndef YYMP_DTL_STUPLE_IMPL_HPP
 #define YYMP_DTL_STUPLE_IMPL_HPP
 
+#include <functional>
 #include <type_traits>
 #include <utility>
 
@@ -117,6 +118,25 @@ namespace yymp::dtl::stuple
     constexpr
     const T&& 
     get(const leaf<I, T>&& p) noexcept { return ::std::forward<const T&&>(p.part); }
+    
+    // =========================================================================
+    // stuple::impl: apply
+    
+    template<typename F, ::std::size_t... I, typename... T>
+    constexpr decltype(auto) apply(
+      F&& f, 
+      const impl<::std::index_sequence<I...>, T...>& t) 
+    {
+      return ::std::invoke(::std::forward<F>(f), t.leaf<I, T>.part...);
+    }
+    
+    template<typename F, ::std::size_t... I, typename... T>
+    constexpr decltype(auto) apply(
+      F&& f, 
+      impl<::std::index_sequence<I...>, T...>&& t) 
+    {
+      return ::std::invoke(::std::forward<F>(f), ::std::move(t.leaf<I, T>.part)...);
+    }
 }
 
 #endif // YYMP_DTL_STUPLE_IMPL_HPP

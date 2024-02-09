@@ -5,6 +5,7 @@
 
 #include <cstddef>
 
+#include <concepts>
 #include <type_traits>
 #include <utility>
 
@@ -117,6 +118,34 @@ namespace yymp
             };
         }(::std::make_index_sequence<::std::tuple_size<tuple_a>::value>{},
           ::std::make_index_sequence<::std::tuple_size<tuple_b>::value>{});
+    }
+    
+    /**
+     * \brief Invokes \a f with the elements of \a t.
+     *
+     * This is a specialized overload of `yymp::apply` for `stuple`s that mirrors
+     * `std::apply`.
+     */
+    template<typename F, typename... Types>
+      requires ::std::invocable<F, const Types&...>
+    constexpr decltype(auto) apply(F&& f, const stuple<Types...>& t)
+      noexcept(::std::is_nothrow_invocable_v<F, const Types&...>)
+    {
+      return dtl::stuple::apply(::std::forward<F>(f), t);
+    }
+    
+    /**
+     * \brief Invokes \a f with the elements of \a t.
+     *
+     * This is a specialized overload of `yymp::apply` for `stuple`s that mirrors
+     * `std::apply`.
+     */
+    template<typename F, typename... Types>
+      requires ::std::invocable<F, Types&&...>
+    constexpr decltype(auto) apply(F&& f, stuple<Types...>&& t)
+      noexcept(::std::is_nothrow_invocable_v<F, Types&&...>)
+    {
+      return dtl::stuple::apply(::std::forward<F>(f), ::std::move(t));
     }
 }
 
