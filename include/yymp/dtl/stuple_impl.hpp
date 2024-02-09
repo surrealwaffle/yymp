@@ -127,7 +127,7 @@ namespace yymp::dtl::stuple
       F&& f, 
       const impl<::std::index_sequence<I...>, T...>& t) 
     {
-      return ::std::invoke(::std::forward<F>(f), t.leaf<I, T>.part...);
+      return ::std::invoke(::std::forward<F>(f), t.leaf<I, T>::part...);
     }
     
     template<typename F, ::std::size_t... I, typename... T>
@@ -135,7 +135,7 @@ namespace yymp::dtl::stuple
       F&& f, 
       impl<::std::index_sequence<I...>, T...>&& t) 
     {
-      return ::std::invoke(::std::forward<F>(f), ::std::move(t.leaf<I, T>.part)...);
+      return ::std::invoke(::std::forward<F>(f), ::std::move(t.leaf<I, T>::part)...);
     }
 }
 
